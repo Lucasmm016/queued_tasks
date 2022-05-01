@@ -1,7 +1,6 @@
 # Script de execução paralela de tarefas com sistema de fila
 
 from asyncio import run, Queue, create_task
-from email.mime import base
 from httpx import AsyncClient
 
 base_url = 'https://httpbin.org/get?value={e}'
