@@ -27,6 +27,11 @@ async def main(n:int, tasks: list, f: callable):
 
     q = Queue(n) # define o número máximo de tarefas a serem executadas
     r = []
+    
+    # é possível realocar a função "worker" neste espaço, resultando em apenas uma única função (main) para se preocupar
+    # exemplo:
+    # async def worker(q, r, f: callable):
+    #   ...
 
     workers = [create_task(worker(q, r, f)) for _ in range(n)] # informa à função "trabalhora" os parâmetros para a execução das tarefas
 
