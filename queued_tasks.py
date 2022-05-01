@@ -25,7 +25,10 @@ async def main(n:int, tasks: list, f: callable):
     # tasks: lista de tarefas
     # f: função que executa a tarefa
 
-    q = Queue(n) # define o número máximo de tarefas a serem executadas
+    # caso o número de tarefas passado seja menor ou igual a 0, a quantidade de tarefas concorrentes será do tamanho da lista de tarefas
+    t = n if n > 0 else len(tasks)
+    
+    q = Queue(t) # define o número máximo de tarefas a serem executadas
     r = []
     
     # é possível realocar a função "worker" neste espaço, resultando em apenas uma única função (main) para se preocupar
@@ -33,7 +36,7 @@ async def main(n:int, tasks: list, f: callable):
     # async def worker(q, r, f: callable):
     #   ...
 
-    workers = [create_task(worker(q, r, f)) for _ in range(n)] # informa à função "trabalhora" os parâmetros para a execução das tarefas
+    workers = [create_task(worker(q, r, f)) for _ in range(t)] # informa à função "trabalhora" os parâmetros para a execução das tarefas
 
     for i in tasks:
         await q.put(i) # envia as tarefas para a fila
