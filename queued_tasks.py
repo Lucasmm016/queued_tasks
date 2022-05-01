@@ -16,7 +16,7 @@ async def worker(q, r, f: callable):
     while True:
         e = await q.get() # aguarda uma tarefa
         r.append(await f(e)) # adiciona o resultado da tarefa na lista de resultados
-        q.task_done() # informa ao gerenciados de tarefas, que uma tarefa terminou
+        q.task_done() # informa ao gerenciador de tarefas, que uma tarefa terminou
 
 # função principal que designa as tarefas a serem executadas
 async def main(n:int, tasks: list, f: callable):
