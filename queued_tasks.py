@@ -1,22 +1,24 @@
 # Script de execução paralela de tarefas com sistema de fila
 
-from asyncio import run, Queue, create_task, sleep
-from random import randint
+from asyncio import run, Queue, create_task
+from email.mime import base
+from httpx import AsyncClient
 
-# função exemplo de tarefa (aqui ficaria o request usando httpx por exemplo)
+base_url = 'https://httpbin.org/get?value={e}'
+
+# função que executa a tarefa utilizando "httpx"
 async def my_function(e):
-    rand = randint(1, 5) # tempo aleatório para a tarefa ser executada (poderia ser uma requisição)
-    print("start task", e, "and sleep for", rand, "seconds")
-    await sleep(rand)
-    print("end task", e)
-    return e # retorna o resultado da tarefa
+    print("starting task with value", e)
+    async with AsyncClient() as c:
+        r = await c.get(base_url.format(e=e))
+        print("task finished with value", e)
+        return r.json() # retorna o resultado da tarefa
 
-# função "trabalhadora", onde é catalogado os resultados das tarefas e informa ao "queue" que a tarefa terminou
 async def worker(q, r, f: callable):
     while True:
         e = await q.get() # aguarda uma tarefa
         r.append(await f(e)) # adiciona o resultado da tarefa na lista de resultados
-        q.task_done() # informa ao gerenciador de tarefas, que uma tarefa terminou
+        q.task_done() # informa ao gerenciados de tarefas, que uma tarefa terminou
 
 # função principal que designa as tarefas a serem executadas
 async def main(n:int, tasks: list, f: callable):
@@ -42,7 +44,7 @@ async def main(n:int, tasks: list, f: callable):
 if __name__ == "__main__":
     NUMBER_OF_TASKS = 3 # número de tarefas a serem executadas simultaneamente
 
-    # lista de tarefas (apenas um exemplo, mas poderia ser qualquer coisa)
+    # lista de tarefas (parâmetros a ser passado para a requisição)
     list_of_tasks = [
         0, 1, 2, 3, 4, 5, 6, 7, 8, 9
     ]
